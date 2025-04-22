@@ -8,4 +8,3 @@ global using MyWebApp.Models;
 
 global using Microsoft.Data.SqlClient;
 
-global using MyWebApp.Data;

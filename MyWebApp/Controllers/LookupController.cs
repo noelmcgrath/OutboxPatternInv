@@ -1,3 +1,5 @@
+using MyWebApp.Data;
+
 namespace MyWebApp.Controllers;
 
 [ApiController]
@@ -5,16 +7,16 @@ namespace MyWebApp.Controllers;
 public class LookupController : ControllerBase
 {
 	private readonly ILogger<LookupController> _logger;
-	private readonly ILookupRepository _lookupRepository;
+	private readonly ILookupService _lookupService;
 	private readonly CCS.Messaging.Contract.IBus c_messagingBus;
 
 	public LookupController(
 		ILogger<LookupController> logger,
-		ILookupRepository lookupRepository,
+		ILookupService lookupService,
 		CCS.Messaging.Contract.IBus c_messagingBus)
 	{
 		_logger = logger;
-		_lookupRepository = lookupRepository;
+		_lookupService = lookupService;
 		this.c_messagingBus = c_messagingBus;
 	}
 
@@ -47,13 +49,12 @@ public class LookupController : ControllerBase
 		lookupRequest.Id = Guid.NewGuid();
 		lookupRequest.ContinuumOrderIdentifier = this.GenerateRandomString(8);
 
-		await _lookupRepository.InsertAsync(lookupRequest);
-
 		var offerCreated = this.Build(lookupRequest);
+		var x = _lookupService.SaveWithEventAsync(lookupRequest, offerCreated);
 
 		try
 		{
-			await c_messagingBus.PublishAsync(offerCreated).WaitAsync(TimeSpan.FromSeconds(2));
+			var _task = await c_messagingBus.PublishAsync(offerCreated).WaitAsync(TimeSpan.FromSeconds(2));
 		}
 		catch (TimeoutException)
 		{

@@ -60,6 +60,8 @@ namespace MyWebApp.ServiceRegistration
 			var _busConfigurationBuilder = new BusConfigurationBuilder("hosts=localhost:5672;virtualhost=/;clientprovidedname=pcsprivate_at;username=ccsappuser;ssl=false");
 			_busConfigurationBuilder.ExchangeDeclare("pcs.events", ExchangeType.fanout);
 			_busConfigurationBuilder.QueueDeclare("reporting.events", "pcs.events");
+			_busConfigurationBuilder.QueueDeclare("hsbcfxs.events", "pcs.events");
+			_busConfigurationBuilder.QueueDeclare("jpmorganfxs.events", "pcs.events");
 
 			_busConfigurationBuilder.RegisterPublication<MyWebApp.Messaging.Events.OfferCreated>(
 				"pcs.events",

@@ -3,6 +3,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Logging.AddConsole();
 builder.Services.AddTransient<ILookupRepository, LookupRepository>();
+builder.Services.AddTransient<ILookupEventRepository, LookupEventRepository>();
+builder.Services.AddTransient<ILookupService, LookupService>();
 builder.Services.AddControllers();
 RegisterServices(builder.Services);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -44,6 +46,5 @@ app.Run();
 void RegisterServices(
 	IServiceCollection services)
 {
-
 	services.RegisterMessaging();
 }

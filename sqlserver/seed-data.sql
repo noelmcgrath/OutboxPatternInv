@@ -106,4 +106,17 @@ PRINT 'Lookup table created'
 -- CREATE NONCLUSTERED INDEX IX_LookupEntry_CreationTimestamp ON dbo.LookupEntry (CreationTimestamp)
 -- PRINT 'LookupEntry table created'
 
+CREATE TABLE dbo.OutboxMessages(
+	Id															uniqueidentifier NOT NULL,
+	MessageType													varchar(50) NOT NULL,
+	MessageJSON													nvarchar(MAX) NULL,
+	OccurredTimestamp											datetime NOT NULL,
+	ProcessedTimestamp											datetime NULL,
+	VersionSequence												int	NOT NULL,
+	Error														nvarchar(300) NULL
+) ON [PRIMARY]
+ALTER TABLE dbo.OutboxMessages ADD CONSTRAINT PK_OutboxMessages PRIMARY KEY CLUSTERED (Id)
+-- ALTER TABLE dbo.Lookup ADD CONSTRAINT IX_Lookup_ContinuumOrderIdentifier UNIQUE NONCLUSTERED (ContinuumOrderIdentifier)
+-- CREATE NONCLUSTERED INDEX IX_Lookup_CreationTimestamp ON dbo.Lookup (CreationTimestamp)
+-- PRINT 'Lookup table created'
 
