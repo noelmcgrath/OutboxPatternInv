@@ -9,13 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CCS.Messaging" Version="1.2.3.4" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\scm\library\ccsmessaging\src\CCS.Messaging\CCS.Messaging.csproj" />
-  </ItemGroup>
+
 
 </Project>

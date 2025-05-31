@@ -11,24 +11,28 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+COPY ./misc/Continuum_CA.crt /usr/local/share/ca-certificates/Continuum_CA.crt
+RUN update-ca-certificates
 COPY "CCS.*nupkg" ./localnuget/
 COPY "nuget.config" ./
-COPY ["MyWebApp/MyWebApp.csproj", "MyWebApp/"]
-RUN dotnet restore "./MyWebApp/MyWebApp.csproj"
+COPY ["OutboxProcessor/OutboxProcessor.csproj", "OutboxProcessor/"]
+RUN dotnet nuget add source "https://gitlab.ccsnonprod.net/api/v4/projects/91/packages/nuget/index.json" --name "gitlabfeed" --username "nmcgrath" --password "glpat-Mvi1mrookRozMuzZC1Uu" --store-password-in-clear-text
+RUN dotnet restore "./OutboxProcessor/OutboxProcessor.csproj"
 COPY . .
-WORKDIR "/src/MyWebApp"
-RUN dotnet build "./MyWebApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/OutboxProcessor"
+RUN dotnet build "./OutboxProcessor.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MyWebApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./OutboxProcessor.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY MyWebApp/entrypoint.sh ./entrypoint.sh
+COPY OutboxProcessor/entrypoint.sh ./entrypoint.sh
 
 
 RUN chmod +x ./entrypoint.sh

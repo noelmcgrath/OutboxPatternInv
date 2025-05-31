@@ -1,4 +1,4 @@
-﻿global using MyWebApp.ServiceRegistration;
+﻿//global using MyWebApp.ServiceRegistration;
 global using Microsoft.AspNetCore.Mvc;
 global using System.Data;
 

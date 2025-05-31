@@ -1,4 +1,4 @@
-﻿namespace MyWebApp.Messaging.Events;
+﻿namespace MyConsumer.MessageHandler.Events;
 
 public class OfferCreated : CCS.Messaging.Contract.Event
 {
@@ -18,12 +18,12 @@ public class OfferCreated : CCS.Messaging.Contract.Event
 	public DateTime CreationTimestamp { get; set; }
 
 	public int VersionSequence { get; set; }
+
 	public string? OrderSessionId { get; set; }
 
-
 	public OfferCreated(
-		Guid id,
 		Guid offerId,
+		Guid id,
 		string continuumOrderIdentifier,
 		string? merchantOrderIdentifier,
 		int merchantId,

@@ -23,5 +23,9 @@ for q in $(rabbitmqadmin --username=ccsappuser --password=BfTtrMgh7y6a list queu
 done
 
 
+for q in $(rabbitmqadmin --username=ccsappuser --password=BfTtrMgh7y6a list queues name --quiet); do
+    $q
+done
+
 
 Publishing where rabbit gone, results in duplicate

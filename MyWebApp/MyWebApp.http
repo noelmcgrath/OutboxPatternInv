@@ -1,4 +1,5 @@
-@MyWebApp_HostAddress = http://localhost:5173
+//@MyWebApp_HostAddress = http://localhost:8085
+@MyWebApp_HostAddress = http://localhost:8080
 
 ### Get a sample Lookup
 GET {{MyWebApp_HostAddress}}/lookup

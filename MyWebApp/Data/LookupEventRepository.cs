@@ -5,12 +5,12 @@ namespace MyWebApp.Data
 {
 	public class LookupEventRepository : ILookupEventRepository
 	{
-		public async Task<int> InsertAsync(
+		public async Task InsertAsync(
 			OfferCreated offerCreated,
 			SqlConnection connection,
 			SqlTransaction transaction)
 		{
-			var messageJson = JsonSerializer.Serialize(offerCreated);
+			var messageJson = JsonSerializer.Serialize(offerCreated, new JsonSerializerOptions { IncludeFields = true });
 			var occurred = DateTime.UtcNow;
 
 			var query = @"
@@ -37,8 +37,7 @@ namespace MyWebApp.Data
 			command.Parameters.Add(new SqlParameter("@OccurredTimestamp", SqlDbType.DateTime) { Value = offerCreated.CreationTimestamp });
 			command.Parameters.Add(new SqlParameter("@VersionSequence", SqlDbType.Int) { Value = offerCreated.VersionSequence });
 
-			var result = await command.ExecuteNonQueryAsync();
-			return result;
+			await command.ExecuteNonQueryAsync();
 
 			//_logger.LogInformation("Inserted OfferCreated event into OutboxMessages.");
 		}

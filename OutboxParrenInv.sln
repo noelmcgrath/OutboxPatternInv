@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCS.Messaging", "..\..\scm\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyConsumer", "MyConsumer\MyConsumer.csproj", "{9BE173E2-1108-4031-A6D9-78C97F6D3F2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutboxProcessor", "OutboxProcessor\OutboxProcessor.csproj", "{4F53CD6B-ECC4-4009-8422-831539380BD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{9BE173E2-1108-4031-A6D9-78C97F6D3F2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BE173E2-1108-4031-A6D9-78C97F6D3F2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BE173E2-1108-4031-A6D9-78C97F6D3F2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F53CD6B-ECC4-4009-8422-831539380BD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F53CD6B-ECC4-4009-8422-831539380BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F53CD6B-ECC4-4009-8422-831539380BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F53CD6B-ECC4-4009-8422-831539380BD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

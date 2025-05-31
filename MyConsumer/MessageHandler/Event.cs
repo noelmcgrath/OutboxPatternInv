@@ -1,55 +1,57 @@
-﻿using System.Collections.Concurrent;
+﻿using CCS.Messaging.Client;
+using CCS.Messaging.Contract;
+using MyConsumer.Data;
+using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace MyConsumer.MessageHandler;
 
 public class Event
 {
 	private readonly ILogger<Event> c_logger;
-	private static readonly ConcurrentDictionary<string, byte> _uniqueContinuumOrderIds = new();
+	private readonly IInboxRepository c_repository;
 
 
 	public Event(
-		ILogger<Event> logger)
+		ILogger<Event> logger,
+		IInboxRepository repository)
 	{
 		this.c_logger = logger;
-		
+		this.c_repository = repository;
+
 	}
 
 
 	public async Task<CCS.Messaging.Contract.ConsumerHandlerResult> HandleAsync(
-		MyWebApp.ServiceRegistration.OfferCreated @event)
+		MyConsumer.MessageHandler.Events.OfferCreated @event)
 	{
-		// Attempt to add the ContinuumOrderIdentifier to the dictionary
-		if (_uniqueContinuumOrderIds.TryAdd(@event.ContinuumOrderIdentifier, 0))
-		{
-			//c_logger.LogInformation($"New unique ContinuumOrderIdentifier added: {@event.ContinuumOrderIdentifier}");
-		}
-		else
-		{
-			Console.WriteLine($"Duplicate ContinuumOrderIdentifier detected: {@event.ContinuumOrderIdentifier}");
-			// Depending on your requirements, you might choose to return early
-			// return CCS.Messaging.Contract.ConsumerHandlerResult.Completed;
-		}
-
-		return await this.HandleGenericAsync(@event);
-	}
-
-	private async Task<CCS.Messaging.Contract.ConsumerHandlerResult> HandleGenericAsync(
-		CCS.Messaging.Contract.Event @event)
-	{
-		var _sourceEvent = (dynamic)@event;
-		var _sourceEventName = _sourceEvent.GetType().FullName;
-
+		await this.c_repository.OpenAsync();
+		using var transaction = this.c_repository.BeginTransaction();
 
 		try
 		{
-			await Task.Delay(TimeSpan.FromMicroseconds(1));
-			//if (this.DoesTypeHaveIsSyntheticField(@event.GetType()) && _sourceEvent.IsSynthetic) { return Messaging.Contract.ConsumerHandlerResult.Completed; }
+			var messageId = @event.Id;
+			var messageType = @event.GetType().FullName!;
+			var messageJson = JsonSerializer.Serialize(@event, new JsonSerializerOptions { IncludeFields = true });
+			var consumerId = "my-consumer-id"; // This can be passed in or resolved from DI/context.
+
+			var alreadyProcessed = await this.c_repository.IsProcessedAsync(messageId, transaction);
+			if (alreadyProcessed)
+				return CCS.Messaging.Contract.ConsumerHandlerResult.Completed;
+
+			await this.c_repository.UpsertMessageAsync(messageId, messageType, messageJson, consumerId, transaction);
+
+			//await handler(@event); // process the message using the passed-in handler
+
+			await this.c_repository.MarkAsProcessedAsync(messageId, transaction);
+
+			transaction.Commit();
 			return CCS.Messaging.Contract.ConsumerHandlerResult.Completed;
 		}
-		catch (Exception exception)
+		catch (Exception ex)
 		{
-			Console.WriteLine(exception.ToString());
+			await this.c_repository.MarkAsFailedAsync(@event.Id, ex.ToString(), transaction);
+			transaction.Rollback();
 			return CCS.Messaging.Contract.ConsumerHandlerResult.Errored;
 		}
 	}

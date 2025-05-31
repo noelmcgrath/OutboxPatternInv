@@ -1,4 +1,5 @@
 using MyWebApp.Data;
+using System.Text.Json;
 
 namespace MyWebApp.Controllers;
 
@@ -8,16 +9,13 @@ public class LookupController : ControllerBase
 {
 	private readonly ILogger<LookupController> _logger;
 	private readonly ILookupService _lookupService;
-	private readonly CCS.Messaging.Contract.IBus c_messagingBus;
 
 	public LookupController(
 		ILogger<LookupController> logger,
-		ILookupService lookupService,
-		CCS.Messaging.Contract.IBus c_messagingBus)
+		ILookupService lookupService)
 	{
 		_logger = logger;
 		_lookupService = lookupService;
-		this.c_messagingBus = c_messagingBus;
 	}
 
 	[HttpGet(Name = "GetLookup")]
@@ -41,6 +39,7 @@ public class LookupController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> Post([FromBody] Models.LookupRequest? lookupRequest)
 	{
+		_logger.LogInformation("in post");
 		if (lookupRequest == null)
 		{
 			return BadRequest("lookupRequest is null");
@@ -50,16 +49,17 @@ public class LookupController : ControllerBase
 		lookupRequest.ContinuumOrderIdentifier = this.GenerateRandomString(8);
 
 		var offerCreated = this.Build(lookupRequest);
-		var x = _lookupService.SaveWithEventAsync(lookupRequest, offerCreated);
-
 		try
 		{
-			var _task = await c_messagingBus.PublishAsync(offerCreated).WaitAsync(TimeSpan.FromSeconds(2));
+			await _lookupService.SaveWithEventAsync(lookupRequest, offerCreated);
 		}
-		catch (TimeoutException)
+		catch (Exception)
 		{
-			return StatusCode(504, "Publishing to the message bus timed out.");
+			_logger.LogError("failed to save");
+
+			throw;
 		}
+
 
 		return CreatedAtAction(nameof(Get), new { id = lookupRequest.Id }, lookupRequest);
 	}
@@ -67,6 +67,7 @@ public class LookupController : ControllerBase
 	private OfferCreated Build(LookupRequest lookupRequest)
 	{
 		return new OfferCreated(
+			Guid.NewGuid(),
 			lookupRequest.Id,
 			lookupRequest.ContinuumOrderIdentifier,
 			lookupRequest.MerchantOrderIdentifier,

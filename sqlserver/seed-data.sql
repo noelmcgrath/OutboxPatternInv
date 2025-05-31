@@ -120,3 +120,35 @@ ALTER TABLE dbo.OutboxMessages ADD CONSTRAINT PK_OutboxMessages PRIMARY KEY CLUS
 -- CREATE NONCLUSTERED INDEX IX_Lookup_CreationTimestamp ON dbo.Lookup (CreationTimestamp)
 -- PRINT 'Lookup table created'
 
+
+
+-- CREATE TABLE InboxMessages (
+--     Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,    -- The message/event ID
+--     ReceivedOn DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+--     ProcessedOn DATETIME2 NULL,                  -- When processing completed
+--     Type NVARCHAR(255) NOT NULL,
+--     Source NVARCHAR(255) NULL,                   -- Optional: source system identifier
+--     Error NVARCHAR(MAX) NULL                     -- Optional: error message for failed attempts
+-- );
+
+-- -- Optional index for unprocessed messages
+-- CREATE INDEX IX_InboxMessages_Unprocessed
+-- ON InboxMessages (ProcessedOn)
+-- WHERE ProcessedOn IS NULL;
+
+
+
+CREATE TABLE dbo.InboxMessages (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    MessageType NVARCHAR(255) NOT NULL,
+    MessageJSON NVARCHAR(MAX) NOT NULL,
+    ReceivedAt DATETIMEOFFSET NOT NULL,
+    ProcessedAt DATETIMEOFFSET NULL,
+    Status NVARCHAR(50) NOT NULL,
+    ConsumerId NVARCHAR(255) NULL,
+    ErrorDetails NVARCHAR(MAX) NULL,
+    Retries INT DEFAULT 0,
+    INDEX IX_InboxMessages_Status_ReceivedAt (Status, ReceivedAt)
+);
+
+

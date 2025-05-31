@@ -1,4 +1,4 @@
-﻿namespace MyWebApp.Messaging.Events;
+﻿namespace OutboxProcessor.Types;
 
 public class OfferCreated : CCS.Messaging.Contract.Event
 {
@@ -18,12 +18,13 @@ public class OfferCreated : CCS.Messaging.Contract.Event
 	public DateTime CreationTimestamp { get; set; }
 
 	public int VersionSequence { get; set; }
-	public string? OrderSessionId { get; set; }
 
+	public string? OrderSessionId { get; set; }
 
 	public OfferCreated(
 		Guid id,
-		Guid offerId,
+		string correlationId,
+		Guid offerid,
 		string continuumOrderIdentifier,
 		string? merchantOrderIdentifier,
 		int merchantId,
@@ -32,9 +33,9 @@ public class OfferCreated : CCS.Messaging.Contract.Event
 		int resultCodeId,
 		DateTime creationTimestamp,
 		int versionSequence,
-		string? orderSessionId) : base(id, Guid.NewGuid().ToString())
+		string? orderSessionId) : base(id, correlationId)
 	{
-		OfferId = offerId;
+		OfferId = offerid;
 		ContinuumOrderIdentifier = continuumOrderIdentifier;
 		MerchantOrderIdentifier = merchantOrderIdentifier;
 		MerchantId = merchantId;

@@ -5,6 +5,12 @@
 			"password_hash": "AUrHE+njiT9BWamT02Z23h1GpV8Me7ZEsQawMjWEbkkeWDVV",
 			"hashing_algorithm": "rabbit_password_hashing_sha256",
 			"tags": "administrator"
+		},
+		{
+			"name": "guest",
+			"password": "guest",
+			"hashing_algorithm": "rabbit_password_hashing_sha256",
+			"tags": "administrator"
 		}
 	],
 	"vhosts": [
@@ -13,6 +19,13 @@
 		}
 	],
 	"permissions": [
+		{
+			"user": "guest",
+			"vhost": "/",
+			"configure": ".*",
+			"write": ".*",
+			"read": ".*"
+		},
 		{
 			"user": "ccsappuser",
 			"vhost": "/",

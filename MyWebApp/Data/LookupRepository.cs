@@ -6,7 +6,7 @@ public class LookupRepository : ILookupRepository
 
 	public LookupRepository(IConfiguration configuration)
 	{
-		_connectionString = configuration.GetConnectionString("DefaultConnection");
+		_connectionString = configuration["databaseConnectionString"]!;
 	}
 
 	public async Task<List<LookupRequest>> GetAllAsync()
