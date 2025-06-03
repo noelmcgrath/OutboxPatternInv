@@ -12,6 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\scm\library\ccsmessaging\src\CCS.Messaging\CCS.Messaging.csproj" />
+    <ProjectReference Include="..\ccsmessaging\src\CCS.Messaging\CCS.Messaging.csproj" />
   </ItemGroup>
 </Project>

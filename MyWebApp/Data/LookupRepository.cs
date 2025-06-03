@@ -1,72 +1,15 @@
-﻿namespace MyWebApp.Data;
+﻿using System.Data.Common;
+
+namespace MyWebApp.Data;
 
 public class LookupRepository : ILookupRepository
 {
-	private readonly string _connectionString;
+	private readonly CCS.Common.DAL.IGateway c_DALGateway;
 
-	public LookupRepository(IConfiguration configuration)
+	public LookupRepository(
+		CCS.Common.DAL.IGateway DALGateway)
 	{
-		_connectionString = configuration["databaseConnectionString"]!;
-	}
-
-	public async Task<List<LookupRequest>> GetAllAsync()
-	{
-		var lookups = new List<LookupRequest>();
-
-		using var connection = new SqlConnection(_connectionString);
-		await connection.OpenAsync();
-
-		var command = new SqlCommand("SELECT * FROM dbo.Lookup", connection);
-
-		using var reader = await command.ExecuteReaderAsync();
-		while (await reader.ReadAsync())
-		{
-			var lookup = new LookupRequest
-			{
-				Id = reader.GetGuid(reader.GetOrdinal("Id")),
-				ContinuumOrderIdentifier = reader.GetString(reader.GetOrdinal("ContinuumOrderIdentifier")),
-				MerchantOrderIdentifier = reader.IsDBNull(reader.GetOrdinal("MerchantOrderIdentifier")) ? null : reader.GetString(reader.GetOrdinal("MerchantOrderIdentifier")),
-				MerchantId = reader.GetInt32(reader.GetOrdinal("MerchantId")),
-				SaleCurrencyId = reader.GetInt32(reader.GetOrdinal("SaleCurrencyId")),
-				SaleValue = reader.GetDecimal(reader.GetOrdinal("SaleValue")),
-				ResultCodeId = reader.GetInt32(reader.GetOrdinal("ResultCodeId")),
-				CreationTimestamp = reader.GetDateTime(reader.GetOrdinal("CreationTimestamp")),
-				VersionSequence = reader.GetInt32(reader.GetOrdinal("VersionSequence")),
-				OrderSessionId = reader.IsDBNull(reader.GetOrdinal("OrderSessionId")) ? null : reader.GetString(reader.GetOrdinal("OrderSessionId"))
-			};
-			lookups.Add(lookup);
-		}
-
-		return lookups;
-	}
-
-	public async Task<LookupRequest?> GetByIdAsync(Guid id)
-	{
-		using var connection = new SqlConnection(_connectionString);
-		await connection.OpenAsync();
-
-		var command = new SqlCommand("SELECT * FROM dbo.Lookup WHERE Id = @Id", connection);
-		command.Parameters.AddWithValue("@Id", id);
-
-		using var reader = await command.ExecuteReaderAsync();
-		if (await reader.ReadAsync())
-		{
-			return new LookupRequest
-			{
-				Id = reader.GetGuid(reader.GetOrdinal("Id")),
-				ContinuumOrderIdentifier = reader.GetString(reader.GetOrdinal("ContinuumOrderIdentifier")),
-				MerchantOrderIdentifier = reader.IsDBNull(reader.GetOrdinal("MerchantOrderIdentifier")) ? null : reader.GetString(reader.GetOrdinal("MerchantOrderIdentifier")),
-				MerchantId = reader.GetInt32(reader.GetOrdinal("MerchantId")),
-				SaleCurrencyId = reader.GetInt32(reader.GetOrdinal("SaleCurrencyId")),
-				SaleValue = reader.GetDecimal(reader.GetOrdinal("SaleValue")),
-				ResultCodeId = reader.GetInt32(reader.GetOrdinal("ResultCodeId")),
-				CreationTimestamp = reader.GetDateTime(reader.GetOrdinal("CreationTimestamp")),
-				VersionSequence = reader.GetInt32(reader.GetOrdinal("VersionSequence")),
-				OrderSessionId = reader.IsDBNull(reader.GetOrdinal("OrderSessionId")) ? null : reader.GetString(reader.GetOrdinal("OrderSessionId"))
-			};
-		}
-
-		return null;
+		this.c_DALGateway = DALGateway;
 	}
 
 	public async Task<int> InsertAsync(
@@ -74,79 +17,18 @@ public class LookupRepository : ILookupRepository
 		SqlConnection connection,
 		SqlTransaction transaction)
 	{
-		//try
-		//{
-			var command = new SqlCommand(@"
-					INSERT INTO dbo.Lookup
-					(Id, ContinuumOrderIdentifier, MerchantOrderIdentifier, MerchantId, SaleCurrencyId, SaleValue, ResultCodeId, CreationTimestamp, VersionSequence, OrderSessionId)
-					VALUES
-					(@Id, @ContinuumOrderIdentifier, @MerchantOrderIdentifier, @MerchantId, @SaleCurrencyId, @SaleValue, @ResultCodeId, @CreationTimestamp, @VersionSequence, @OrderSessionId)", 
-					connection,
-					transaction);
+		var _parameters = new List<DbParameter>();
+		_parameters.Add(this.c_DALGateway.CreateParameter("@Id", DbType.Guid, lookup.Id));
+		_parameters.Add(this.c_DALGateway.CreateStringParameter("@ContinuumOrderIdentifier", DbType.AnsiString, 50, lookup.ContinuumOrderIdentifier));
+		_parameters.Add(this.c_DALGateway.CreateStringParameter("@MerchantOrderIdentifier", DbType.String, 50, lookup.MerchantOrderIdentifier));
+		_parameters.Add(this.c_DALGateway.CreateParameter("@MerchantId", DbType.Int32, lookup.MerchantId));
+		_parameters.Add(this.c_DALGateway.CreateParameter("@SaleCurrencyId", DbType.Int32, lookup.SaleCurrencyId));
+		_parameters.Add(this.c_DALGateway.CreateDecimalParameter("@SaleValue", DbType.Decimal, 19, 4, lookup.SaleValue));
+		_parameters.Add(this.c_DALGateway.CreateParameter("@ResultCodeId", DbType.Int32, lookup.ResultCodeId));
+		_parameters.Add(this.c_DALGateway.CreateParameter("@CreationTimestamp", DbType.DateTimeOffset, lookup.CreationTimestamp));
+		_parameters.Add(this.c_DALGateway.CreateParameter("@VersionSequence", DbType.Int32, lookup.VersionSequence));
+		_parameters.Add(this.c_DALGateway.CreateStringParameter("@OrderSessionId", DbType.String, 300, lookup.OrderSessionId));
 
-			command.Parameters.AddWithValue("@Id", lookup.Id);
-			command.Parameters.AddWithValue("@ContinuumOrderIdentifier", lookup.ContinuumOrderIdentifier);
-			command.Parameters.AddWithValue("@MerchantOrderIdentifier", (object?)lookup.MerchantOrderIdentifier ?? DBNull.Value);
-			command.Parameters.AddWithValue("@MerchantId", lookup.MerchantId);
-			command.Parameters.AddWithValue("@SaleCurrencyId", lookup.SaleCurrencyId);
-			command.Parameters.AddWithValue("@SaleValue", lookup.SaleValue);
-			command.Parameters.AddWithValue("@ResultCodeId", lookup.ResultCodeId);
-			command.Parameters.AddWithValue("@CreationTimestamp", lookup.CreationTimestamp);
-			command.Parameters.AddWithValue("@VersionSequence", lookup.VersionSequence);
-			command.Parameters.AddWithValue("@OrderSessionId", (object?)lookup.OrderSessionId ?? DBNull.Value);
-
-			var result = await command.ExecuteNonQueryAsync();
-			return result;
-		//}
-		//catch (SqlException ex)
-		//{
-		//	// Log or inspect the full exception
-		//	Console.WriteLine($"SQL Error: {ex.Message}");
-		//	throw;
-		//}
-
-	}
-
-	public async Task<int> UpdateAsync(LookupRequest lookup)
-	{
-		using var connection = new SqlConnection(_connectionString);
-		await connection.OpenAsync();
-
-		var command = new SqlCommand(@"
-            UPDATE dbo.Lookup
-            SET ContinuumOrderIdentifier = @ContinuumOrderIdentifier,
-                MerchantOrderIdentifier = @MerchantOrderIdentifier,
-                MerchantId = @MerchantId,
-                SaleCurrencyId = @SaleCurrencyId,
-                SaleValue = @SaleValue,
-                ResultCodeId = @ResultCodeId,
-                CreationTimestamp = @CreationTimestamp,
-                VersionSequence = @VersionSequence,
-                OrderSessionId = @OrderSessionId
-            WHERE Id = @Id", connection);
-
-		command.Parameters.AddWithValue("@Id", lookup.Id);
-		command.Parameters.AddWithValue("@ContinuumOrderIdentifier", lookup.ContinuumOrderIdentifier);
-		command.Parameters.AddWithValue("@MerchantOrderIdentifier", (object?)lookup.MerchantOrderIdentifier ?? DBNull.Value);
-		command.Parameters.AddWithValue("@MerchantId", lookup.MerchantId);
-		command.Parameters.AddWithValue("@SaleCurrencyId", lookup.SaleCurrencyId);
-		command.Parameters.AddWithValue("@SaleValue", lookup.SaleValue);
-		command.Parameters.AddWithValue("@ResultCodeId", lookup.ResultCodeId);
-		command.Parameters.AddWithValue("@CreationTimestamp", lookup.CreationTimestamp);
-		command.Parameters.AddWithValue("@VersionSequence", lookup.VersionSequence);
-		command.Parameters.AddWithValue("@OrderSessionId", (object?)lookup.OrderSessionId ?? DBNull.Value);
-
-		return await command.ExecuteNonQueryAsync();
-	}
-
-	public async Task<int> DeleteAsync(Guid id)
-	{
-		using var connection = new SqlConnection(_connectionString);
-		await connection.OpenAsync();
-
-		var command = new SqlCommand("DELETE FROM dbo.Lookup WHERE Id = @Id", connection);
-		command.Parameters.AddWithValue("@Id", id);
-
-		return await command.ExecuteNonQueryAsync();
+		return await this.c_DALGateway.ExecuteNonQueryAsyncNew(connection, transaction, MyWebApp.Data.SQLText.InsertLookup, parameters: _parameters);
 	}
 }

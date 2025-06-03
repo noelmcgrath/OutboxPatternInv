@@ -11,13 +11,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-
-COPY ./misc/Continuum_CA.crt /usr/local/share/ca-certificates/Continuum_CA.crt
-RUN update-ca-certificates
-COPY "CCS.*nupkg" ./localnuget/
-COPY "nuget.config" ./
 COPY ["OutboxProcessor/OutboxProcessor.csproj", "OutboxProcessor/"]
-RUN dotnet nuget add source "https://gitlab.ccsnonprod.net/api/v4/projects/91/packages/nuget/index.json" --name "gitlabfeed" --username "nmcgrath" --password "glpat-Mvi1mrookRozMuzZC1Uu" --store-password-in-clear-text
 RUN dotnet restore "./OutboxProcessor/OutboxProcessor.csproj"
 COPY . .
 WORKDIR "/src/OutboxProcessor"

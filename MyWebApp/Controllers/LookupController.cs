@@ -1,4 +1,4 @@
-using MyWebApp.Data;
+using MyWebApp.Service;
 using System.Text.Json;
 
 namespace MyWebApp.Controllers;
@@ -8,11 +8,11 @@ namespace MyWebApp.Controllers;
 public class LookupController : ControllerBase
 {
 	private readonly ILogger<LookupController> _logger;
-	private readonly ILookupService _lookupService;
+	private readonly ISaveLookup _lookupService;
 
 	public LookupController(
 		ILogger<LookupController> logger,
-		ILookupService lookupService)
+		ISaveLookup lookupService)
 	{
 		_logger = logger;
 		_lookupService = lookupService;

@@ -5,13 +5,13 @@ VisualStudioVersion = 17.13.35913.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyWebApp", "MyWebApp\MyWebApp.csproj", "{821EFB7E-7A7D-40E0-9876-32357231FA55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCS.Common", "..\..\scm\library\ccscommon\src\CCS.Common\CCS.Common.csproj", "{7E1D9914-DD68-526B-788D-285DBD70F2CF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCS.Messaging", "..\..\scm\library\ccsmessaging\src\CCS.Messaging\CCS.Messaging.csproj", "{1A016967-6ABE-BEF6-184D-093DDDCBB851}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyConsumer", "MyConsumer\MyConsumer.csproj", "{9BE173E2-1108-4031-A6D9-78C97F6D3F2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutboxProcessor", "OutboxProcessor\OutboxProcessor.csproj", "{4F53CD6B-ECC4-4009-8422-831539380BD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCS.Messaging", "ccsmessaging\src\CCS.Messaging\CCS.Messaging.csproj", "{E3BC671B-01C5-F338-9D63-363358BA3BDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCS.Common", "ccscommon\src\CCS.Common\CCS.Common.csproj", "{170F7255-A8ED-55AC-408E-0FEA99DF5DB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,6 @@ Global
 		{821EFB7E-7A7D-40E0-9876-32357231FA55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{821EFB7E-7A7D-40E0-9876-32357231FA55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{821EFB7E-7A7D-40E0-9876-32357231FA55}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E1D9914-DD68-526B-788D-285DBD70F2CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E1D9914-DD68-526B-788D-285DBD70F2CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E1D9914-DD68-526B-788D-285DBD70F2CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E1D9914-DD68-526B-788D-285DBD70F2CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A016967-6ABE-BEF6-184D-093DDDCBB851}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A016967-6ABE-BEF6-184D-093DDDCBB851}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A016967-6ABE-BEF6-184D-093DDDCBB851}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A016967-6ABE-BEF6-184D-093DDDCBB851}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9BE173E2-1108-4031-A6D9-78C97F6D3F2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9BE173E2-1108-4031-A6D9-78C97F6D3F2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BE173E2-1108-4031-A6D9-78C97F6D3F2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +31,14 @@ Global
 		{4F53CD6B-ECC4-4009-8422-831539380BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F53CD6B-ECC4-4009-8422-831539380BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F53CD6B-ECC4-4009-8422-831539380BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3BC671B-01C5-F338-9D63-363358BA3BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3BC671B-01C5-F338-9D63-363358BA3BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3BC671B-01C5-F338-9D63-363358BA3BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3BC671B-01C5-F338-9D63-363358BA3BDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{170F7255-A8ED-55AC-408E-0FEA99DF5DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{170F7255-A8ED-55AC-408E-0FEA99DF5DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{170F7255-A8ED-55AC-408E-0FEA99DF5DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{170F7255-A8ED-55AC-408E-0FEA99DF5DB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

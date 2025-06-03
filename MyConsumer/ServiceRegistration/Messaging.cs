@@ -21,7 +21,7 @@ namespace MyWebApp.ServiceRegistration
 		private static CCS.Messaging.Client.Configuration.IBusConfiguration BootstrapBusConfiguration(
 		IServiceProvider serviceProvider)
 		{
-			var _busConfigurationBuilder = new CCS.Messaging.Client.Configuration.BusConfigurationBuilder("hosts=localhost:5672;virtualhost=/;clientprovidedname=myconsumer;username=ccsappuser;ssl=false")
+			var _busConfigurationBuilder = new CCS.Messaging.Client.Configuration.BusConfigurationBuilder("hosts=myrabbit:5672;virtualhost=/;clientprovidedname=myconsumer;username=ccsappuser;ssl=false")
 			{
 				//ConsumerReplicas = _appSettings.MessagingBusConsumerReplicas,
 				ConsumerMessagePrefetchCount = 10

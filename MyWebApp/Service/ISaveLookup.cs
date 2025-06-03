@@ -1,7 +1,6 @@
-﻿
-namespace MyWebApp.Data
+﻿namespace MyWebApp.Service
 {
-	public interface ILookupService
+	public interface ISaveLookup
 	{
 		Task SaveWithEventAsync(LookupRequest request, OfferCreated offerCreated);
 	}

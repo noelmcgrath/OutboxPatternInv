@@ -1,10 +1,19 @@
-﻿using MyWebApp.Messaging.Events;
+﻿using System.Data.Common;
 using System.Text.Json;
 
 namespace MyWebApp.Data
 {
 	public class LookupEventRepository : ILookupEventRepository
 	{
+		private readonly CCS.Common.DAL.IGateway c_DALGateway;
+
+		public LookupEventRepository(
+			CCS.Common.DAL.IGateway DALGateway)
+		{
+			this.c_DALGateway = DALGateway;
+		}
+
+
 		public async Task InsertAsync(
 			OfferCreated offerCreated,
 			SqlConnection connection,
@@ -13,32 +22,14 @@ namespace MyWebApp.Data
 			var messageJson = JsonSerializer.Serialize(offerCreated, new JsonSerializerOptions { IncludeFields = true });
 			var occurred = DateTime.UtcNow;
 
-			var query = @"
-                INSERT INTO dbo.OutboxMessages (
-                    Id,
-                    MessageType,
-                    MessageJSON,
-                    OccurredTimestamp,
-                    VersionSequence
-                )
-                VALUES (
-                    @Id,
-                    @MessageType,
-                    @MessageJSON,
-                    @OccurredTimestamp,
-                    @VersionSequence
-                )";
+			var _parameters = new List<DbParameter>();
+			_parameters.Add(this.c_DALGateway.CreateParameter("@Id", DbType.Guid, offerCreated.Id));
+			_parameters.Add(this.c_DALGateway.CreateStringParameter("@MessageType", DbType.String, 50, nameof(OfferCreated)));
+			_parameters.Add(this.c_DALGateway.CreateStringParameter("@MessageJSON", DbType.String, 5000, messageJson));
+			_parameters.Add(this.c_DALGateway.CreateParameter("@OccurredTimestamp", DbType.DateTimeOffset, offerCreated.CreationTimestamp));
+			_parameters.Add(this.c_DALGateway.CreateParameter("@VersionSequence", DbType.Int32, offerCreated.VersionSequence));
 
-			using var command = new SqlCommand(query, connection, transaction);
-
-			command.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = offerCreated.Id });
-			command.Parameters.Add(new SqlParameter("@MessageType", SqlDbType.VarChar, 50) { Value = nameof(OfferCreated) });
-			command.Parameters.Add(new SqlParameter("@MessageJSON", SqlDbType.NVarChar) { Value = messageJson });
-			command.Parameters.Add(new SqlParameter("@OccurredTimestamp", SqlDbType.DateTime) { Value = offerCreated.CreationTimestamp });
-			command.Parameters.Add(new SqlParameter("@VersionSequence", SqlDbType.Int) { Value = offerCreated.VersionSequence });
-
-			await command.ExecuteNonQueryAsync();
-
+			await this.c_DALGateway.ExecuteNonQueryAsyncNew(connection, transaction, MyWebApp.Data.SQLText.InsertOutbox, parameters: _parameters);
 			//_logger.LogInformation("Inserted OfferCreated event into OutboxMessages.");
 		}
 	}

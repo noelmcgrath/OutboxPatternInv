@@ -46,12 +46,26 @@ services:
         condition: service_started
 
 
-  0utboxprocessorapp:
+  outboxprocessorapp:
     build:
       context: .
       dockerfile: OutboxProcessor/Dockerfile
     ports:
       - "10001:10001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    # Optional: set UID if needed for USER $APP_UID to work correctly
+    user: "${APP_UID:-1000}"
+    depends_on:
+      myrabbit:
+        condition: service_healthy
+      mysql:
+        condition: service_started
+
+  consumerapp:
+    build:
+      context: .
+      dockerfile: MyConsumer/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     # Optional: set UID if needed for USER $APP_UID to work correctly

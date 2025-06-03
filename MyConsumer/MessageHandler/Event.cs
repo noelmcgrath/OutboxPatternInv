@@ -25,6 +25,7 @@ public class Event
 	public async Task<CCS.Messaging.Contract.ConsumerHandlerResult> HandleAsync(
 		MyConsumer.MessageHandler.Events.OfferCreated @event)
 	{
+		this.c_logger.LogInformation($"HandleAsync  {@event.Id} ");
 		await this.c_repository.OpenAsync();
 		using var transaction = this.c_repository.BeginTransaction();
 
