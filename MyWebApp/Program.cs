@@ -21,24 +21,11 @@ if (app.Environment.IsDevelopment())
 	app.MapOpenApi();
 }
 
-//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Lifetime.ApplicationStarted.Register(() =>
-{
-	//app.Logger.LogApplicationStarted();
-	//Instrumentation.ApplicationStarted.Add(1);
-	//_messageBusController.Connect();
-});
 
-app.Lifetime.ApplicationStopped.Register(() =>
-{
-	//app.Logger.LogApplicationStopped();
-	//Instrumentation.ApplicationStopped.Add(1);
-	//_messageBusController.Close();
-});
 
 app.Run();

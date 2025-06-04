@@ -1,4 +1,9 @@
+using OutboxProcessor.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var _appSettings = builder.Configuration.Get<OutboxProcessor.AppSettings>(options => options.BindNonPublicProperties = true);
+builder.Services.AddSingleton(CCS.Common.DAL.Factory.GetGatewayForSqlClientConnectionString(_appSettings!.DatabaseConnectionString!));
 builder.Services.AddTransient<IOutboxMessageRepository, OutboxMessageRepository>();
 builder.Services.AddSingleton<OutboxProcessor.OutboxMessageProcessor>();
 RegisterServices(builder.Services);

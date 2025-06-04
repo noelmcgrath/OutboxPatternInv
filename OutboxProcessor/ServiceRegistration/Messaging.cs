@@ -9,7 +9,7 @@ namespace OutboxProcessor.ServiceRegistration
 		public static void RegisterMessaging(
 			this IServiceCollection collection)
 		{
-			var _busConfigurationBuilder = new BusConfigurationBuilder("hosts=myrabbit:5672;virtualhost=/;clientprovidedname=pcsprivate_at;username=ccsappuser;ssl=false");
+			var _busConfigurationBuilder = new BusConfigurationBuilder("hosts=localhost:5672;virtualhost=/;clientprovidedname=pcsprivate_at;username=ccsappuser;ssl=false");
 			_busConfigurationBuilder.ExchangeDeclare("pcs.events", ExchangeType.fanout);
 			_busConfigurationBuilder.QueueDeclare("reporting.events", "pcs.events");
 			_busConfigurationBuilder.QueueDeclare("hsbcfxs.events", "pcs.events");

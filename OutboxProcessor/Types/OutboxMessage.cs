@@ -8,5 +8,5 @@ public class OutboxMessage
 	public DateTime OccurredTimestamp { get; set; }
 	public DateTime? ProcessedTimestamp { get; set; }
 	public int VersionSequence { get; set; }
-	public string Error { get; set; }
+	public string? Error { get; set; }
 }
