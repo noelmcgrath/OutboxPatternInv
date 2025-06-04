@@ -6,7 +6,7 @@ var _appSettings = builder.Configuration.Get<OutboxProcessor.AppSettings>(option
 builder.Services.AddSingleton(CCS.Common.DAL.Factory.GetGatewayForSqlClientConnectionString(_appSettings!.DatabaseConnectionString!));
 builder.Services.AddTransient<IOutboxMessageRepository, OutboxMessageRepository>();
 builder.Services.AddSingleton<OutboxProcessor.OutboxMessageProcessor>();
-RegisterServices(builder.Services);
+RegisterServices(builder.Services, builder.Configuration); // Pass builder.Configuration as an argument
 builder.Services.AddHostedService<OutboxProcessor.BackgroundWorkerService>();
 
 // Add services to the container.
@@ -36,7 +36,8 @@ app.UseHttpsRedirection();
 app.Run();
 
 void RegisterServices(
-	IServiceCollection services)
+	IServiceCollection services,
+	IConfiguration configuration) // Add IConfiguration parameter
 {
-	services.RegisterMessaging();
+	services.RegisterMessaging(configuration); // Pass configuration to RegisterMessaging
 }

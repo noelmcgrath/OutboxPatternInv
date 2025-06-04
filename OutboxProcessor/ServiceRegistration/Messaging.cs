@@ -7,9 +7,11 @@ namespace OutboxProcessor.ServiceRegistration
 	public static class Messaging
 	{
 		public static void RegisterMessaging(
-			this IServiceCollection collection)
+			this IServiceCollection collection,
+			IConfiguration configuration) // Added IConfiguration as a parameter
 		{
-			var _busConfigurationBuilder = new BusConfigurationBuilder("hosts=localhost:5672;virtualhost=/;clientprovidedname=pcsprivate_at;username=ccsappuser;ssl=false");
+			var _appSettings = configuration.Get<OutboxProcessor.AppSettings>(options => options.BindNonPublicProperties = true);
+			var _busConfigurationBuilder = new BusConfigurationBuilder(_appSettings?.MessagingBusConnectionStringSettings);
 			_busConfigurationBuilder.ExchangeDeclare("pcs.events", ExchangeType.fanout);
 			_busConfigurationBuilder.QueueDeclare("reporting.events", "pcs.events");
 			_busConfigurationBuilder.QueueDeclare("hsbcfxs.events", "pcs.events");
@@ -18,7 +20,6 @@ namespace OutboxProcessor.ServiceRegistration
 			_busConfigurationBuilder.RegisterPublication<OutboxProcessor.Types.OfferCreated>(
 				"pcs.events",
 				"pcs.offercreated.v1");
-
 
 			var _messagingBusConfiguration = _busConfigurationBuilder.Build();
 
